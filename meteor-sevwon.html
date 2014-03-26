@@ -1,0 +1,29 @@
+<head>
+  <title>meteor-sevwon</title>
+</head>
+
+<body>
+  {{> hello}}
+  {{> games}}
+  {{> gameInProgress}}
+  {{> scoreboard}}
+</body>
+
+<template name="hello">
+  <h1>Hello World!</h1>
+  {{greeting}}
+  <input type="button" value="Click" />
+  {{loginButtons}}
+</template>
+
+<template name="games">
+  {{#if loggedIn}}
+    <input class="startagame" type='button' value="Start a Room">
+  {{/if}}
+</template>
+
+<template name="gameInProgress">
+</template>
+
+<template name="scoreboard">
+</template>
