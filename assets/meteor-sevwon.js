@@ -2,7 +2,7 @@
 //collect defines collections succintly by passing the collection name with caps;
 //assumes you are using the CamelCase/Uppercased = new Meteor.collection('lowercase') naming convention
 function collect(collection_name) {
-  eval(collection_name + " = New Meteor.Collection('" + collection_name.toLowerCase() + "')" );
+  eval(collection_name + " = new Meteor.Collection('" + collection_name.toLowerCase() + "');" );
 }
 
 if (Meteor.isClient) {

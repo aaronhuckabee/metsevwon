@@ -1,7 +1,9 @@
 /* CSS declarations go here */
 body {
-  background: red;
+  background: white;
+  font-family: 'Lato';
 }
+
 h1 {
   margin: 20px;
   border: 5px solid black;
@@ -18,4 +20,203 @@ h1 {
 }
 .login-link-text {
 
+}
+.game {
+  text-align: center;
+  input {
+    width: 30%
+    margin 10px 35%;
+  }
+}
+.player {
+  width: 150px;
+  border-radius: 15px;
+  border: 8px solid rgba(0, 0, 0, 0.2);
+  text-align: center;
+  display: inline-block;
+  overflow: hidden;
+  margin: 7px;
+  img {
+    margin: 0 auto;
+    display: inline-block;
+  }
+}
+.card {
+  height: 160px;
+  width: 100px;
+  display: inline-block;
+  vertical-align: top;
+  position:relative;
+  border: 10px solid black;
+  border-radius: 9px;
+  margin: 3px;
+  overflow: hidden;
+  transition: all 0.4s linear;
+  -webkit-transform:scale(1);
+  &:hover {
+    -webkit-transform:scale(2);
+    z-index: 2;
+  }
+  &.red{
+    background:#F55;
+  }
+  &.grey{
+    background:#AAA;
+  }
+  &.green{
+    background:#2B7;
+  }
+  &.blue{
+    background:#5BF;
+  }
+  &.purple{
+    background:#759;
+  }
+  &.brown{
+    background:#943;
+  }
+  &.yellow{
+    background:#FB1;
+  }
+}
+
+.hand .card{
+  .slider {
+    position: absolute;
+    bottom: -60px;
+    width: 100%;
+    transition:all 0.5s linear 0.4s;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px 10px 0px 0;
+    color: white;
+    text-shadow: 1px 1px rgba(255, 255, 255, 0.13);
+    &:hover {
+      background: black;
+    }
+    div {
+      &:hover {
+        color: rgba(196, 0, 0, 1);
+      }
+    }
+  }
+  &:hover {
+    .slider {
+      bottom: 0;
+    }
+  }
+}
+
+.resource {
+  &:before {
+    font-family: "Flaticon";
+  }
+  &.stone {
+    &:before {
+      content: "\e00d";
+      color: #000;
+    }
+  }
+  &.ore {
+    &:before {
+      content: "\e00a";
+      color: #000;
+    }
+  }
+  &.brick {
+    &:before {
+      content: "\e001";
+      color: #000;
+    }
+  }
+  &.wood{
+    &:before {
+      content: "\e003";
+      color: #000;
+    }
+  }
+  &.textile{
+    &:before {
+      content: "\e009";
+      color: #000;
+    }
+  }
+  &.glass{
+    &:before {
+      content: "\e000";
+      color: #000;
+    }
+  }
+  &.papyrus{
+    &:before {
+      content: "\e008";
+      color: #000;
+    }
+  }
+  &.coin{
+    &:before {
+      content: "\00a9";
+      color: #000;
+    }
+  }
+}
+
+.tech {
+  font-family: "Flaticon";
+  &:before {
+    font-family: "Flaticon";
+  }
+  &.compass{
+    &:before {
+      content: "\e004";
+      color: #000;
+    }
+  }
+  &.gear {
+    &:before {
+      content: "\e00b";
+      color: #000;
+    }
+  }
+  &.tablet {
+    &:before {
+      content: "\e007";
+      color: #000;
+    }
+  }
+}
+
+.wonder {
+  display: inline-block;
+  width: 250px;
+  height:80px;
+  border 10px solid (rgba(0, 0, 0, 0.2));
+  border-radius: 5px;
+}
+.wonder-stage {
+  width: 30.3%;
+  float: left;
+  margin: 0 1.5% 0 1.5%;
+  background: #777777;
+  border-radius: 8px 8px 0 0;
+}
+.card-name {
+  background: #ccc;
+  border-radius: 0px 5px 5px 0px;
+  text-align: left;
+  width: 86px;
+  position: absolute;
+  left: -28px;
+  bottom: 38px;
+  text-indent: 5px;
+  -webkit-transform: rotate(270deg);
+  font-size: 9px;
+}
+
+.card-overlay {
+  position: absolute;
+  top:0;
+  bottom:0;
+  left: 0;
+  right: 0;
+  background: rgba
 }

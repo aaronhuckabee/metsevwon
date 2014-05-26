@@ -6,10 +6,8 @@
 standard-app-packages
 autopublish
 insecure
-preserve-inputs
 accounts-base
 accounts-password
-accounts-google
 stylus
 accounts-ui
 jquery

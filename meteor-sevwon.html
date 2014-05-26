@@ -1,29 +1,180 @@
 <head>
   <title>meteor-sevwon</title>
+  <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
   {{> hello}}
   {{> games}}
-  {{> gameInProgress}}
+  {{> game}}
   {{> scoreboard}}
 </body>
 
 <template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
-  {{loginButtons}}
+  {{> loginButtons}}
 </template>
 
 <template name="games">
   {{#if loggedIn}}
-    <input class="startagame" type='button' value="Start a Room">
+    {{#if notInGame}}
+      <input class="startaroom" type='button' value="Start a Room">
+    {{/if}}
+  {{/if}}
+
+    {{#each game}}
+      <div class="game-box">
+        {{#if notInGame}}
+          <input id='{{_id}}' class="joinagame" type='button' value="Join Game">
+        {{/if}}
+        <p>Players at This Table:</p>
+        <!--{{#each playersPlaying}}-->
+          <!--<div class='player'>-->
+            <!--{{email}}-->
+          <!--</div>-->
+        <!--{{/each}}-->
+      </div>
+    {{/each}}
+</template>
+
+<template name="game">
+  {{#if loggedIn}}
+    {{#each yourGame}}
+      <div class="game">
+        {{#each playersPlaying}}
+          <div class="player" style="background:{{getHashHex uid}}">
+            <img src="http://robohash.org/{{uid}}.png?size=100x100">
+            <div class=player-name>
+              {{email}}
+            </div>
+          </div>
+        {{/each}}
+
+        <div class ='your-wonder'>
+          {{#with wonder}}
+            {{#if a}}
+            <div id="a" class='wonder wonder-candidate'>
+              <div class='wonder-name'>{{name}}</div>
+              {{#with a}}
+              <div class='wonder-resource'>resource:{{resource}}</div>
+                <div class='wonder-stage wonder-stage1'>
+                  {{#with stage1}}
+                  <div class='cost'> {{#processResources cost }}{{/processResources}} </div>
+                    <div class='boon'>{{boon}}</div>
+                  {{/with}}
+                </div>
+                <div class='wonder-stage wonder-stage2'>
+                  {{#with stage2}}
+                    <div class='cost'>{{cost}}</div>
+                    <div class='boon'>{{boon}}</div>
+                  {{/with}}
+                </div>
+                <div class='wonder-stage wonder-stage3'>
+                  {{#with stage3}}
+                    <div class='cost'>{{cost}}</div>
+                    <div class='boon'>{{boon}}</div>
+                  {{/with}}
+                </div>
+              {{/with}}
+            </div>
+            {{/if}}
+
+            {{#if b}}
+            <div id="b" class='wonder wonder-candidate'>
+              <div class='wonder-name'>{{name}}</div>
+              {{#with b}}
+              <div class='wonder-resource'>resource:{{resource}}</div>
+                <div class='wonder-stage wonder-stage1'>
+                  {{#with stage1}}
+                  <div class='cost'>{{cost}}</div>
+                  <div class='boon'>{{boon}}</div>
+                  {{/with}}
+                </div>
+                <div class='wonder-stage wonder-stage2'>
+                  {{#with stage2}}
+                  <div class='cost'>{{cost}}</div>
+                  <div class='boon'>{{boon}}</div>
+                  {{/with}}
+                </div>
+                <div class='wonder-stage wonder-stage3'>
+                  {{#with stage3}}
+                  <div class='cost'>{{cost}}</div>
+                  <div class='boon'>{{boon}}</div>
+                  {{/with}}
+                </div>
+              {{/with}}
+            </div>
+            {{/if}}
+
+          {{/with}}
+          </div>
+        {{#if ages}}
+        <div class='hand'>
+          {{#if cardSelected}}
+            {{#with cardSelected}}
+              <p>Your Selected Card: </p>
+              <div id='{{_id}}' class='card hand {{color}}'>
+                <div class='card-overlay'></div>
+                <div class='card-name'>{{name}}</div>
+                <div class='card-cost'>cost:{{cost}}</div>
+                <div class='discard'>Discard</div>
+              </div>
+            {{/with}}
+          {{/if}}
+          <p class='hand-title'>Your Hand:</p>
+          {{#if wonderSelected}}
+            {{#unless cardSelected}}
+              {{#if ages}}
+                {{#each yourCards}}
+                <div id='{{_id}}' class='card hand {{color}}'>
+                  <div class='card-overlay'></div>
+                  <div class='card-name'>{{name}}</div>
+                  <div class='card-cost'>cost:{{cost}}</div>
+                  <div class='slider'>
+                    <div class='discard'>Discard</div>
+                    <div class='wonder-stage-play'>Play as Wonder Stage</div>
+                  </div>
+                </div>
+                {{/each}}
+              {{/if}}
+            {{/unless}}
+          {{/if}}
+          {{#unless wonderSelected}}
+            <p>select your wonder side to see your hand</p>
+          {{/unless}}
+        </div>
+        {{/if}}
+        {{#unless ages}}
+          {{#if threePlus}}
+            <input id='{{_id}}' class="startagame" type='button' value="Start Game">
+          {{/if}}
+        {{/unless}}
+      </div>
+    {{/each}}
   {{/if}}
 </template>
 
-<template name="gameInProgress">
+<template name="scoreboard">
+  <div class="scoreboard">
+  </div>
 </template>
 
-<template name="scoreboard">
+<template name="wonder">
+<div class='wonder-stage wonder-stage1'>
+  {{#with stage1}}
+  <div class='cost'>{{cost}}</div>
+  <div class='boon'>{{boon}}</div>
+  {{/with}}
+</div>
+<div class='wonder-stage wonder-stage2'>
+  {{#with stage2}}
+  <div class='cost'>{{cost}}</div>
+  <div class='boon'>{{boon}}</div>
+  {{/with}}
+</div>
+<div class='wonder-stage wonder-stage3'>
+  {{#with stage3}}
+  <div class='cost'>{{cost}}</div>
+  <div class='boon'>{{boon}}</div>
+  {{/with}}
+</div>
 </template>

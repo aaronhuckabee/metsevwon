@@ -1,0 +1,6 @@
+process boons
+subtract coins appropriately
+trade purchases (trade collection type, referenced by hand when necessary for processing)
+end of round success (military comparison + victory assignment to players)
+make cards invisible once successfully selected
+building a wonder stage process
