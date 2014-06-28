@@ -48,32 +48,35 @@
             </div>
           </div>
         {{/each}}
+        <div class='reserve-space'>
+        <div class='play-area'>
+          {{#with user}}
+            <div class='resource coin'>:{{coins}}</div>
+            <div class='military-tokens'>
+              {{processTokens militaryTokens}}
+            </div>
+          {{/with}}
+          {{#each cardsPlayedColor}}
+          <div class='card-set {{color}}'>
+            <div class='shadow'></div>
+            {{#each cards}}
+              <div class='card-wrapper'>
+                {{> card}}
+              </div>
+            {{/each}}
+            </div>
+          {{/each}}
+        </div>
+        </div>
 
         <div class ='your-wonder'>
           {{#with wonder}}
+
             {{#if a}}
             <div id="a" class='wonder wonder-candidate'>
               <div class='wonder-name'>{{name}}</div>
               {{#with a}}
-              <div class='wonder-resource'>resource:{{resource}}</div>
-                <div class='wonder-stage wonder-stage1'>
-                  {{#with stage1}}
-                  <div class='cost'> {{#processResources cost }}{{/processResources}} </div>
-                    <div class='boon'>{{boon}}</div>
-                  {{/with}}
-                </div>
-                <div class='wonder-stage wonder-stage2'>
-                  {{#with stage2}}
-                    <div class='cost'>{{cost}}</div>
-                    <div class='boon'>{{boon}}</div>
-                  {{/with}}
-                </div>
-                <div class='wonder-stage wonder-stage3'>
-                  {{#with stage3}}
-                    <div class='cost'>{{cost}}</div>
-                    <div class='boon'>{{boon}}</div>
-                  {{/with}}
-                </div>
+                {{> wonderInternal}}
               {{/with}}
             </div>
             {{/if}}
@@ -82,42 +85,20 @@
             <div id="b" class='wonder wonder-candidate'>
               <div class='wonder-name'>{{name}}</div>
               {{#with b}}
-              <div class='wonder-resource'>resource:{{resource}}</div>
-                <div class='wonder-stage wonder-stage1'>
-                  {{#with stage1}}
-                  <div class='cost'>{{cost}}</div>
-                  <div class='boon'>{{boon}}</div>
-                  {{/with}}
-                </div>
-                <div class='wonder-stage wonder-stage2'>
-                  {{#with stage2}}
-                  <div class='cost'>{{cost}}</div>
-                  <div class='boon'>{{boon}}</div>
-                  {{/with}}
-                </div>
-                <div class='wonder-stage wonder-stage3'>
-                  {{#with stage3}}
-                  <div class='cost'>{{cost}}</div>
-                  <div class='boon'>{{boon}}</div>
-                  {{/with}}
-                </div>
+                {{> wonderInternal}}
               {{/with}}
             </div>
             {{/if}}
 
           {{/with}}
           </div>
+
         {{#if ages}}
         <div class='hand'>
           {{#if cardSelected}}
             {{#with cardSelected}}
               <p>Your Selected Card: </p>
-              <div id='{{_id}}' class='card hand {{color}}'>
-                <div class='card-overlay'></div>
-                <div class='card-name'>{{name}}</div>
-                <div class='card-cost'>cost:{{cost}}</div>
-                <div class='discard'>Discard</div>
-              </div>
+              {{> card}}
             {{/with}}
           {{/if}}
           <p class='hand-title'>Your Hand:</p>
@@ -125,15 +106,7 @@
             {{#unless cardSelected}}
               {{#if ages}}
                 {{#each yourCards}}
-                <div id='{{_id}}' class='card hand {{color}}'>
-                  <div class='card-overlay'></div>
-                  <div class='card-name'>{{name}}</div>
-                  <div class='card-cost'>cost:{{cost}}</div>
-                  <div class='slider'>
-                    <div class='discard'>Discard</div>
-                    <div class='wonder-stage-play'>Play as Wonder Stage</div>
-                  </div>
-                </div>
+                  {{> card}}
                 {{/each}}
               {{/if}}
             {{/unless}}
@@ -155,6 +128,63 @@
 
 <template name="scoreboard">
   <div class="scoreboard">
+  </div>
+</template>
+<template name='card'>
+<div id='{{_id}}' class='card {{color}}'>
+    <div class='card-overlay'></div>
+    <div class='card-name'>{{name}}</div>
+    <div class='card-cost'>{{{processResources cost}}}</div>
+    {{#if tech}}
+    <div class='card-tech'> <div class='tech {{tech}}'></div></div>
+    {{/if}}
+    {{#if resource}}
+    <div class='card-resource'>{{{processResources resource}}}</div>
+    {{/if}}
+    {{#if chainTo}}
+    {{{processChainTo chainTo}}}
+    {{/if}}
+    {{#if chainFrom}}
+    <div class='card-chainFrom'>{{chainFrom}}</div>
+    {{/if}}
+    {{#if boon}}
+    <div class='card-boons'>{{{processBoons boon}}}</div>
+    {{/if}}
+    <div class='min-players'>{{minPlayers}}</div>
+    <div class='slider'>
+      <div class='discard'>Discard</div>
+      <div class='wonder-stage-play'>Play as Wonder Stage</div>
+    </div>
+  </div>
+</template>
+
+<template name="wonderInternal">
+  <div class='wonder-resource'>{{{processResources resource}}}</div>
+  <div class='stages'>
+    <div class='wonder-stage wonder-stage1'>
+      {{#with stage1}}
+      <div class='cost'>
+        {{{processResources cost}}}
+      </div>
+      <div class='boon'>{{{processBoons boon}}}</div>
+      {{/with}}
+    </div>
+    <div class='wonder-stage wonder-stage2'>
+      {{#with stage2}}
+      <div class='cost'>
+        {{{processResources cost}}}
+      </div>
+      <div class='boon'>{{{processBoons boon}}}</div>
+      {{/with}}
+    </div>
+    <div class='wonder-stage wonder-stage3'>
+      {{#with stage3}}
+      <div class='cost'>
+        {{{processResources cost}}}
+      </div>
+      <div class='boon'>{{{processBoons boon}}}</div>
+      {{/with}}
+    </div>
   </div>
 </template>
 

@@ -47,7 +47,7 @@ h1 {
   display: inline-block;
   vertical-align: top;
   position:relative;
-  border: 10px solid black;
+  border: 5px solid black;
   border-radius: 9px;
   margin: 3px;
   overflow: hidden;
@@ -105,63 +105,114 @@ h1 {
     }
   }
 }
+.card-cost {
+  position: absolute;
+  top: 0px;
+  left: 5px;
+  background: #d2d2bb;
+  width: 10px;
+  text-indent: -4px;
+  border-right: 2px dotted #9b9883;
+  border-left: 2px dotted #9b9883;
+  .resource.glass:before {
+    padding: 0 8px;
+  }
+}
 
 .resource {
   &:before {
     font-family: "Flaticon";
+    border-radius: 50%;
+    border: 1px solid #d28e44;
   }
   &.stone {
     &:before {
       content: "\e00d";
-      color: #000;
+      color: #bbc3ce;
+      background: #7b717a;
     }
   }
   &.ore {
     &:before {
       content: "\e00a";
-      color: #000;
+      color: #a0887b;
+      background: #4f4543;
     }
   }
   &.brick {
     &:before {
       content: "\e001";
-      color: #000;
+      color: #8b3119;
+      background: #d76332;
     }
   }
   &.wood{
     &:before {
       content: "\e003";
-      color: #000;
+      color: #7f3e29;
+      background: #59832d;
     }
   }
   &.textile{
     &:before {
       content: "\e009";
-      color: #000;
+      color: #f0c0e0;
+      background: #ab2874;
+      border-radius: 40%;
     }
   }
   &.glass{
     &:before {
       content: "\e000";
-      color: #000;
+      color: #97afbb;
+      background: #42a3c6;
+      border-radius: 40%;
+      display: inline-block;
+      padding: 0 10px;
     }
   }
   &.papyrus{
     &:before {
       content: "\e008";
-      color: #000;
+      color: #f6cca4;
+      background: #ebb889;
+      border-radius: 40%;
     }
   }
   &.coin{
     &:before {
       content: "\00a9";
       color: #000;
+      text-shadow: 1px 1px 0px #FFFFFF, -1px -1px 0px #FFFFFF;
+      background: #f8d97a;
+      border: 3px solid #f8d97a;
+    }
+  }
+}
+
+.card-boons {
+  margin-top: 5px;
+}
+
+.chainTo-wrapper {
+  text-align: left;
+  position: absolute;
+  font-size: 8px;
+  bottom: 22px;
+  right: -16px;
+  -webkit-transform: rotate(270deg);
+  width: 60px;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+  .card-chainTo {
+    &:first-child:last-child {
+      text-indent: 8px;
     }
   }
 }
 
 .tech {
   font-family: "Flaticon";
+  font-size: 30px;
   &:before {
     font-family: "Flaticon";
   }
@@ -169,35 +220,235 @@ h1 {
     &:before {
       content: "\e004";
       color: #000;
+  color: white;
     }
   }
   &.gear {
     &:before {
       content: "\e00b";
       color: #000;
+  color: white;
     }
   }
   &.tablet {
     &:before {
       content: "\e007";
       color: #000;
+  color: white;
     }
   }
 }
 
+.wonder-resource {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20%;
+  height: 20px;
+  .resource {
+    background: #943;
+    &.papyrus,
+    &.textile,
+    &.glass {
+      background: #aaa;
+    }
+  }
+}
+
+.resource {
+  margin: 0;
+}
+
+.card-resource {
+  font-size: 30px;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  .or {
+    .resource {
+      display: inline-block;
+    }
+  }
+}
+.min-players {
+  position: absolute;
+  bottom: 0;
+  left: 49%;
+  font-size: 10px;
+  &:after {
+    content: "+";
+  }
+}
+.boon {
+  &:before {
+    font-family: "Flaticon";
+  }
+  &.military {
+    &:before {
+      content: "\e002";
+      color: white;
+      background: red;
+      border: 3px solid;
+      border-radius: 50%;
+      font-size: 20px;
+    }
+  }
+  &.vp{
+    &:after {
+      content: "vp";
+      color: #000;
+    }
+  }
+  &.coin {
+    &:after{
+      content: "\00a9";
+      color: #000;
+      text-shadow: 1px 1px 0px #FFFFFF, -1px -1px 0px #FFFFFF;
+      background: #f8d97a;
+      border: 3px solid #f8d97a;
+      border-radius: 50%;
+    }
+  }
+}
+.trade-wrapper {
+  .resource {
+    display: inline-block;
+  }
+}
+.reserve-space {
+  position: relative;
+  height: 400px;
+  width: 400px;
+  margin: 0 auto;
+}
+.play-area{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  .slider {
+    display: none;
+  }
+  .card-set{
+    position: absolute;
+    bottom: 140px;
+    .shadow {
+      position: absolute;
+      top: 5px;
+      bottom: -130px;
+      right: 5px;
+      left: 5px;
+    }
+    .card-wrapper {
+      display: block;
+      position: relative;
+      height:40px;
+    }
+    &.yellows {
+      left: 65px;
+      .shadow {
+        box-shadow: 0px 0px 200px 10px #FB1;
+      }
+    }
+    &.reds {
+      left: 245px;
+      .shadow {
+        box-shadow: 0px 0px 200px 10px #F55;
+      }
+    }
+    &.blues{
+      left: 415px;
+      .shadow {
+        box-shadow: 0px 0px 200px 10px #5BF;
+      }
+    }
+    &.purples {
+      left: 415px;
+      .shadow {
+        box-shadow: 0px 0px 200px 10px #759;
+      }
+    }
+    &.greens{
+      left: 515px;
+      bottom: -45px;
+      .shadow {
+        box-shadow: 0px 0px 200px 10px #2B7;
+      }
+    }
+    &.greys {
+      .shadow {
+        box-shadow: 0px 0px 200px 10px #AAA;
+      }
+    }
+    &.browns {
+      .shadow {
+        box-shadow: 0px 0px 200px 10px #943;
+      }
+    }
+    &.greys,
+    &.browns {
+      bottom: 0;
+      position: relative;
+      width: 115px;
+      left: -60px;
+    }
+  }
+}
+.arrows {
+  letter-spacing: 3px;
+  p {
+    display: inline-block;
+    margin: 0;
+  }
+}
+.right-triangle:before {
+  content:"\25B6";
+}
+.left-triangle:before {
+  content:"\25C0";
+}
+.self-triangle:before {
+  content:"\25BC";
+}
+.your-wonder:hover {
+  z-index: 2;
+}
+.wonder-name {
+  position: absolute;
+  font-size: 10px;
+  right: 3px;
+  top: 0;
+}
 .wonder {
   display: inline-block;
-  width: 250px;
-  height:80px;
+  width: 500px;
+  height: 160px;
+  position: relative;
   border 10px solid (rgba(0, 0, 0, 0.2));
   border-radius: 5px;
+  transition: all 0.4s linear;
+  background: white;
+  -webkit-transform:scale(1);
+  &:hover {
+    -webkit-transform:scale(2);
+  }
+  .boon {
+    .resource {
+      display: inline-block;
+    }
+  }
+  .resource.glass:before {//one off
+    padding: 2px 3px;
+  }
 }
 .wonder-stage {
-  width: 30.3%;
-  float: left;
-  margin: 0 1.5% 0 1.5%;
+  width: 23%;
+  display: inline-block;
+  vertical-align: bottom;
+  height: 57px;
   background: #777777;
   border-radius: 8px 8px 0 0;
+  position: relative;
+  letter-spacing: 0px;
 }
 .card-name {
   background: #ccc;
@@ -218,5 +469,25 @@ h1 {
   bottom:0;
   left: 0;
   right: 0;
-  background: rgba
+  /*background: rgba*/
+}
+.cost {
+  position: absolute;
+  left: 0;
+  top: 0;
+  .resource{
+    margin: 0;
+    text-align: left;
+    line-height: 7px;
+    &:before {
+      font-size:8px;
+      line-height: 4px;
+    }
+  }
+}
+.stages {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  letter-spacing: 36px;
 }

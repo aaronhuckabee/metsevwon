@@ -1,6 +1,25 @@
 process boons
+  iconsneeded:
+      graveyard
+      buildfree
+      copyguild? probably can be mostly built
+      military victore/defeat tokens
 subtract coins appropriately
-trade purchases (trade collection type, referenced by hand when necessary for processing)
-end of round success (military comparison + victory assignment to players)
-make cards invisible once successfully selected
+complex purchase interface
+end of round success (military comparison + victory/defeat token assignment to players)
+  Just needs military comparison, essentially
 building a wonder stage process
+cleaned up scss
+more codified resource appearance
+total up at end of game
+available coins/tokens won/lost presentation
+discard
+opponents played cards shouold be visible.
+Final Prettiness Assessment 
+    wonders need to show all available stages, no more, no less (rhodes, giza)
+    filter colored cardgroups by age, so that only the latest has an offset,
+    because inheritence doesn't need to be seen when it's past available. Need
+    colorful box shadows everywhere!!!!
+Final Semantic Assessment
+Profile different tasks when performed in different ways
+

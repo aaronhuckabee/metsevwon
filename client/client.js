@@ -130,6 +130,9 @@ if (Meteor.isClient) {
   Template.game.loggedIn= function () {
     return Meteor.user();
   };
+  Template.game.user= function () {
+    return Meteor.gamePlayerUser();
+  }
   Template.game.yourGame = function() {
     if (Meteor.userLoaded()) {
       return Games.find({'playersPlaying.uid': Meteor.userId()}).fetch();
@@ -142,7 +145,7 @@ if (Meteor.isClient) {
   }
   Template.game.yourCards= function() {
     if (Meteor.userLoaded()) {
-      var game = Games.find({'playersPlaying.uid': Meteor.userId()}).fetch()[0];
+      var game = Games.findOne({'playersPlaying.uid': Meteor.userId()});
       var playerIndex;
       _.each(game.playersPlaying, function(value, index, array) {
         if (value.uid == Meteor.userId()) {
@@ -201,6 +204,18 @@ if (Meteor.isClient) {
     //makes sure that there's an allowable number of players to start a game
     return ([3, 4, 5, 6, 7].indexOf(Games.find({'playersPlaying.uid': Meteor.userId()}).fetch()[0].playersPlaying.length) != -1);
   }
+  Template.game.cardsPlayedColor = function() {
+    user = Meteor.gamePlayerUser();
+    var returnSorted = [];
+    _.each(user.cardsOrganized, function(colorset, index, list){
+      var populatedCardSet = [];
+      for (var index2 in colorset.cards) {
+        populatedCardSet.push(Cards.findOne({_id: colorset.cards[index2]}));
+      }
+      user.cardsOrganized[index].cards = populatedCardSet;
+    });
+    return user.cardsOrganized;
+  }
   Template.game.events({
     'click .startagame': function (event) {
       gid = this._id;
@@ -232,7 +247,6 @@ if (Meteor.isClient) {
     },
     'click .hand .card .discard': function(event) {
       cardId = event.currentTarget.parentElement.id;
-      console.log(event.currentTarget.parentElement.id);
       Meteor.call('disCard', Meteor.playerGame()._id, Meteor.gamePlayerUser().uid, _.compact(Meteor.playerGame().ages)[0], Meteor.playerHandId(),  cardId);
       event.stopPropagation();
     },
@@ -251,34 +265,135 @@ if (Meteor.isClient) {
   Handlebars.registerHelper("getHashHex", function(hash) {
    return '#' + (parseInt(parseInt(hash, 36).toExponential().slice(2,-5), 10) & 0xFFFFFF).toString(16).toUpperCase().slice(-6);
   });
-  Handlebars.registerHelper("getResources", function(cid) {
-   //return Cards.find({_id:cid}).fetch()[0];
-   return Cards.find({_id: "PiftCQkjeB5cybKvq"}).fetch()[0]
+  Handlebars.registerHelper("getKey", function(chainTo) {
+
+    var processed = "<div class='chainTo-wrapper'>";
+    if (typeof chainTo == 'string') {
+      processed += "<div class='card-chainTo'>" + chainTo + "</div>";
+    } else {
+      processed += "<div class='card-chainTo'>" + chainTo[0] + "</div>";
+      processed += "<div class='card-chainTo'>" + chainTo[1] + "</div>";
+    }
+    processed += "</div>";
+    return processed;
+  });
+  Handlebars.registerHelper("processChainTo", function(chainTo) {
+
+    var processed = "<div class='chainTo-wrapper'>";
+    if (typeof chainTo == 'string') {
+      processed += "<div class='card-chainTo'>" + chainTo + "</div>";
+    } else {
+      processed += "<div class='card-chainTo'>" + chainTo[0] + "</div>";
+      processed += "<div class='card-chainTo'>" + chainTo[1] + "</div>";
+    }
+    processed += "</div>";
+    return processed;
   });
   Handlebars.registerHelper("processResources", function(resourceBit) {
-    var result;
-    if (resourceBit.length == 8) {
+    var result = "";
+    try {
+      if (resourceBit.length == 8) {
 
-      var beginning = "<p class=\"resource ";
-      var end = "\"> </p>";
-      var resourceArray = new Array('stone', 'ore', 'brick', 'wood', 'textile', 'glass', 'papyrus', 'coin');
+        var beginning = "<p class=\"resource ";
+        var end = "\"> </p>";
+        var resourceArray = new Array('stone', 'ore', 'brick', 'wood', 'textile', 'glass', 'papyrus', 'coin');
 
-      _.each(resourceBit, function(value, index, list) {
-        if (value > 0) {
-          for (var i = bit; i > 0; i--) {
-            result += beginning + resourceArray[index -1] + end;
+        _.each(resourceBit, function(value, index, list) {
+          if (value > 0) {
+            for (var i = value; i > 0; i--) {
+              result += beginning + resourceArray[index] + end;
+            }
           }
-        }
 
-      })
+        })
+      }
     }
-    //if (typeOf resourceBit == 'object') {
-      ////treatment for Ors
+    catch(e) {
+      console.log(e);
+    }
 
-    //} else {
-      ////treatment for Strings
-    //}
+    if (typeof resourceBit == 'object') {
+      //treatment for Ors
+        var beginning = "<p class=\"resource ";
+        var end = "\"> </p>";
+        var resourceArray = new Array('stone', 'ore', 'brick', 'wood', 'textile', 'glass', 'papyrus', 'coin');
+        result += '<div class="or">';
+      _.each(resourceBit, function(resourceString, index, list){
+        _.each(resourceString, function(value, index, list) {
+          if (value > 0) {
+            for (var i = value; i > 0; i--) {
+              result += beginning + resourceArray[index] + end;
+            }
+          }
+        })
+        result += '/';
+      })
+      result = result.slice(0, -1); //trims off final trailing slash. Only other way I can think to do this is to build backwards and set a bit
+      result += '</div>';
+    }
     return result;
+  });
+
+  Handlebars.registerHelper("processBoons", function(boonBit) {
+
+    var returnValue = "";
+    if (boonBit.toString().length == 3) {
+      var wheresTheX = boonBit.indexOf('x');
+      if (wheresTheX != -1) {
+        //fancier processing to represent variables
+      } else {
+        resultKeys = {0: 'military', 1: 'vp', 2: 'coin'};
+        _.each(boonBit, function (value, index, list) {
+          if (value != 0 ) {
+            if (index == 0) {//special case military, as all tokens are shown, not just number
+              while (value > 0) {
+                returnValue += "<div class='boon " + resultKeys[index] + "'></div> "
+                value -= 1;
+              }
+            } else {
+              returnValue += "<div class='boon " + resultKeys[index] + "'>" + value + "</div> "
+            }
+          }
+        });
+      }
+    } else if (typeof boonBit == "number") {
+      returnValue = "<p class='vp'>" + boonBit + "vp</p>";
+    } else {
+      switch (boonBit) {
+        case "tradebasicleft":
+              returnValue += "<div class='trade-wrapper'><div class='resource brick'></div><div class='resource stone'></div><div class='resource wood'></div><div class='resource ore'></div></div><div class='arrows'> <p class='left-triangle'></p></div>"
+          break;
+        case "tradebasicright":
+              returnValue += "<div class='trade-wrapper'><div class='resource brick'></div><div class='resource stone'></div><div class='resource wood'></div><div class='resource ore'></div></div><div class='arrows'> <p class='right-triangle'></p></div>"
+          break;
+        case "tradebasic":
+              returnValue += "<div class='trade-wrapper'><div class='resource brick'></div><div class='resource stone'></div><div class='resource wood'></div><div class='resource ore'></div></div><div class='arrows'> <p class='left-triangle'></p><p class='right-triangle'></p></div>"
+          break;
+        case "tradeadv":
+              returnValue += "<div class='trade-wrapper'><div class='resource textile'></div><div class='resource glass'></div><div class='resource papyrus'></div></div><div class='arrows'> <p class='left-triangle'></p><p class='right-triangle'></p></div>"
+          break;
+        case "anybasic":
+              returnValue += "<div class='boonBit'><div class='resource ore'></div>/<div class='resource stone'></div>/<div class='resource brick'></div>/<div class='resource wood'></div></div></div>"
+          break;
+        case "anyadv":
+              returnValue += "<div class='" + boonBit + "'><p class='resource textile'></p>/<p class='resource papyrus'>/</p><p class='resource glass'></p></div> "
+          break;
+        case "anytech":
+              returnValue += "<div class='" + boonBit + "'><p class='tech compass'></p> <p class='tech gear'></p><p class='tech tablet'></p></div> "
+          break;
+        case "buildfree":
+              returnValue += "<div class='" + boonBit + "'>" + boonBit + "</div>"
+          break;
+        case "copyguild":
+              returnValue += "<div class='" + boonBit + "'>" + boonBit + "</div>"
+          break;
+        case "graveyard":
+              returnValue += "<div class='" + boonBit + "'>" + boonBit + "</div>"
+          break;
+      }
+
+    }
+    return returnValue;
   });
   function inherited(card, player) {
     var inherited = false;

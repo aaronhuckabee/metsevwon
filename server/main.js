@@ -23,9 +23,9 @@ if (Meteor.isServer) {
   }
 
   Meteor.startup(function () {
-    //Games.remove({});;
-    //Cardsets.remove({});
-    //Hands.remove({});
+    Games.remove({});;
+    Cardsets.remove({});
+    Hands.remove({});
 
     //defineWonders();
     //defineCards();
@@ -49,7 +49,7 @@ if (Meteor.isServer) {
       var game = Games.find({_id: gid}).fetch()[0];
       var players = game.playersPlaying;
 
-      game = assignWondersCoins(game);
+      game = assignWondersCoinsEtc(game);
       game.ages = prepCardSets(gid, players.length);
       game.grandIndex = Math.floor(Math.random()* players.length);
       game.playersReady = 0;
@@ -107,7 +107,7 @@ if (Meteor.isServer) {
     },
   })
 }
-function tallypoints() {
+function tallyPoints() {
   //set Game:ended
   //foreach user tally military
   //foreach user tally coins
@@ -120,32 +120,83 @@ function tallypoints() {
   //update users
 }
 
-function roundEnd() {
+function roundEnd(game, ageId) {
   //discardRemaining,
+  handList = Cardsets.findOne({_id: ageId});
+  _.each(handList, function(value, index) {
+    if (index != '_id') {
+      game.discard.push(Hands.findOne({_id:value}).cards[0]);
+      Hands.remove({_id:value});
+    }
+  });
+
   //remove Cardset
+  Cardsets.remove({_id: ageId});
+
   //set age to Null
+  ageoffset = 4 - _.compact(game.ages).length;
+  game.ages[ageoffset] = null;
+
   //resolve military
-  //
+  //calculateMilitary(game);//mostly written out, untested, needs a little verk.
+
   //if lastroundended
-  //tallypoints
+  if (_.compact(game.ages).length == 0) {
+    tallyPoints(game);
+  }
+
+  Games.update({_id:game._id}, game);
+}
+function calculateMilitary(game) {
+
+  var tokenValue;
+  switch (_compact(game.ages).length) {
+    case 2:
+      tokenValue = 1;
+      break;
+    case 1:
+      tokenValue = 3;
+      break;
+    case 0:
+      tokenValue = 5;
+      break;
+  }
+
+  _.each(game.playersPlaying, function(player, index, list) {
+    getMilitaryScore(player);
+  });
+  _.each(playersPlaying, function(player, index, list) {
+    if (index != game.playersPlaying.length -1) {
+      if (player.militaryPoints > list[index+1].militaryPoints) {
+        player.militaryTokens.push(tokenValue);
+        list[index+1].militaryTokens.push(-1);
+      } else if (player.militaryPoints > list[index+1].militaryPoints) {
+        player.militaryTokens.push(-1);
+        list[index+1].militaryTokens.push(tokenValue);
+      }
+    }
+  });
+
+  return game;
 }
 function playAllCards(game, ageId) {
 
   cardset = Cardsets.find({_id: ageId }).fetch()[0];
   console.log(cardset);
   var cardsLeft;
-  _.each(cardset, function(handId, index, list) {
-    if (list[index] == list._id) {
-      if (Debug.playAllCards) {
-        console.log('skip id property processing ' + index);
-      }
+  _.each(cardset, function(handId, cardsetIndex, list) {
+
+    //in case of no selected card (discard, wonder played)
+    if (list[cardsetIndex] == list._id) {
+      if (Debug.playAllCards) { console.log('skip id property processing ' + cardsetIndex); }
       return "";
     }
+
     var hand = Hands.find({_id:handId}).fetch()[0];
-    playerIndex = parseInt(index - 1 + game.grandIndex)%(game.playersPlaying.length);
+    playerIndex = parseInt(cardsetIndex - game.grandIndex -1 + game.playersPlaying.length*100)%(game.playersPlaying.length);
 
     //DEBUGGING
-    if (Debug.playAllCards) { console.log('index:' +index); console.log('handId:' + handId); console.log('hand' + Hands.find({_id:handId}).fetch()); }
+    if (Debug.playAllCards) { console.log('cardsetIndex:' +cardsetIndex); console.log('handId:' + handId); console.log('hand' + Hands.find({_id:handId}).fetch()); }
 
     //handle discard
     if (hand.discard) {
@@ -158,6 +209,7 @@ function playAllCards(game, ageId) {
       Hands.update({_id:handId}, {$unset:{discard: ""}});
       return "";
     }
+
     //get cid
     var playerIndex, selected = Hands.find({_id:handId}).fetch()[0].selected;
 
@@ -166,7 +218,20 @@ function playAllCards(game, ageId) {
 
     //assign to user
     game.playersPlaying[playerIndex].cardsPlayed.push(selected);
+    var cardColor = Cards.findOne({_id: selected}).color + 's';
+    var colorArray = [//this should (rather pointlessly, albeit) match the corresponding colors in assignWondersCoinsEtc
+      'greys',
+      'browns',
+      'yellows',
+      'reds',
+      'blues',
+      'greens',
+      'purples',
+    ];
+    var colorIndex = colorArray.indexOf(cardColor);
+    game.playersPlaying[playerIndex].cardsOrganized[colorIndex]['cards'].push(selected);
     game.playersPlaying[playerIndex].payArray = getPayArray(game.playersPlaying[playerIndex]);
+
     //remove from hand's cardlist
     Hands.update({_id: handId}, {$pull:{cards: selected}});
     //hand no longer has card selected
@@ -174,7 +239,7 @@ function playAllCards(game, ageId) {
     //set variable while data's here on 1st processed
 
 
-    if (index == 1) {
+    if (cardsetIndex == 1) {
       //DEBUGGING
       if (Debug.playAllCards) { console.log('setting Cardsleft: ' + Hands.find({_id:handId}).fetch() ); }
 
@@ -186,12 +251,12 @@ function playAllCards(game, ageId) {
   game.grandIndex ++;
 
   Games.update({_id:game._id}, game);
-  if (cardsLeft == 1) {
-    roundEnd(gid, ageId);
+  if (cardsLeft <= 1) {
+    roundEnd(game, ageId);
   }
 }
 
-function assignWondersCoins(game) {
+function assignWondersCoinsEtc(game) {
   wonders = Wonders.find({}).fetch();
   wonders = _.shuffle(wonders);
   _.each(game.playersPlaying, function(player, offset, list){
@@ -199,6 +264,16 @@ function assignWondersCoins(game) {
     game.playersPlaying[offset].coins = 3;
     game.playersPlaying[offset].stagesBuilt = 0;
     game.playersPlaying[offset].cardsPlayed = [];
+    game.playersPlaying[offset].militaryTokens= [];
+    game.playersPlaying[offset].cardsOrganized = [
+      { color: 'greys', cards: [] },
+      { color: 'browns', cards: [] },
+      { color: 'yellows', cards: [] },
+      { color: 'reds', cards: [] },
+      { color: 'blues', cards: [] },
+      { color: 'greens', cards: [] },
+      { color: 'purples', cards: [] },
+    ];
   })
   return game;
 }
